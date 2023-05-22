@@ -1,0 +1,71 @@
+﻿@model CheckBoxList.Models.StudentModel
+@{
+    ViewBag.Title = "Students List";
+}
+<h2>Students List</h2>
+<script src="~/Scripts/jquery-1.7.1.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('.chkclass').click(function () {
+            var getchkid = $(this).attr('id');
+            var isChecked = $('#' + getchkid).is(':checked');
+            if ($('#' + getchkid).is(':checked') == true) {
+                $('#td' + $(this).val()).css("color", "white");
+                $('#td' + $(this).val()).css("background-color", "blue");
+            }
+            else {
+                $('#td' + $(this).val()).css("color", "black");
+                $('#td' + $(this).val()).css("background-color", "white");
+            }
+        });
+        $('#bttn_Click').click(function () {
+            var studentListVal = null;
+            studentListVal = [];
+
+            $('input:checkbox:checked').each(function () {
+                studentListVal.push($(this).attr('value'));
+            });
+            $.ajax({
+                type: "post",
+                url: "/Student/Studentl",
+                data: { Name: studentListVal },
+                datatype: "json",
+                traditional: true,
+                success: function (data) {
+                    var selectedIds;
+                    for (var i = 0; i < data.success.length; i++)
+                    {
+                        if (selectedIds != undefined) {
+                            selectedIds = selectedIds + " " + data.success[i];
+                        }
+                        else {
+                            selectedIds = data.success[i];
+                        }
+                    }
+                    alert('You have Selected Student Ids- '+selectedIds);
+                }
+            });
+        });
+    });
+</script>
+<div id="divStudentlist" style="height: 300px; overflow: auto;border:solid; width:200px;">
+    @foreach (var names in @Model.StudentNames)
+    {
+        var checkBoxId = "chk" + names.Value;
+        var tdId = "td" + names.Value;
+        <table width="100%">
+            <tr>
+                <td width="20px">
+                    <input type="checkbox" id="@checkBoxId" class="chkclass" value="@names.Value" />
+                </td>
+                <td id="@tdId" width="100px">
+                    @names.Text
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+<div>
+    <input type="button" id="bttn_Click" value="Save" />
+</div> 
